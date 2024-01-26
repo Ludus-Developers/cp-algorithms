@@ -23,8 +23,8 @@ bool intersect(Rect a, Rect b) {
 
 //Area de interseccion de 2 rectangulos
 ll intersectArea(Rect a, Rect b) {
-	ll xOverlap = max(0, min(a.x2, b.x2) - max(a.x1, b.x1));
-	ll yOverlap = max(0, min(a.y2, b.y2) - max(a.y1, b.y1));
+	ll xOverlap = max(0LL, min(a.x2, b.x2) - max(a.x1, b.x1));
+	ll yOverlap = max(0LL, min(a.y2, b.y2) - max(a.y1, b.y1));
 	return xOverlap * yOverlap;
 }
 
