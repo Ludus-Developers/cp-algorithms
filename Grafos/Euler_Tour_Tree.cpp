@@ -56,7 +56,7 @@ class SegmentTree{
         }
  
         void update(int id, int value){
-            return build(id, value, 1, 0, n - 1);
+            build(id, value, 1, 0, n - 1);
         }
 };
 
