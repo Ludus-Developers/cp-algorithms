@@ -110,6 +110,15 @@ bool inAngle(Point a, Point b, Point c, Point p) {
   if (orient(a,b,c) < 0) swap(b,c);
   return orient(a,b,p) >= 0 && orient(a,c,p) <= 0;
 }
+
+//Devuelve el angulo de a respecto a la linea horizontal que pasa por o
+//Usado para Sweep Radain
+double polarAngle(Point p1, Point p2){
+	double x = p1.x - p2.x, y = p1.y - p2.y;
+    double a = atan2(y, x);
+    return a < 0 ? a + 2 * PI : a;
+}
+
 //Devuelve el angulo exterior en radianes
 double orientedAngle(Point a, Point b, Point c) {
   if (ccw(a, b, c))
@@ -137,7 +146,12 @@ Point rotateCCW90(Point p) { // p = rotateCCW90();
 Point rotate180(Point p) { // p = rotate180();
   return { -p.x, -p.y }; 
 } 
-// ----------------------------------------------------------
+// ----------------------------------------------------------------
+
+
+/*
+  --------------------------- Linea -------------------------------
+*/
 
 // Ecuacion ax + by = c
 struct Line { double a, b, c; };                
@@ -190,8 +204,8 @@ bool areIntersect(Line l1, Line l2, Point &p) {
   return true;
 }
 
-// Convierte un Punto y pendiente y lo convierte linea 
-// Formula pendiente: m = (y2 - y1) / (x2 - x1)
+// Convierte un Punto y pendiente a una linea 
+// Formula pendiente: m = y / x
 void pointSlopeToLine(Point p, double m, Line &l) {
   l.a = -m;                                // Siempre -m
   l.b = 1;                                 // Siempre 1
@@ -251,12 +265,45 @@ double distToLineSegment(Point p, Point a, Point b, Point &c) {
   return distToLine(p, a, b, c);                 
 }
 
+/*
+  --------------------------- Circulo -------------------------------
+  
+  Ecuacion estandar: (x-a)² + (y-b)² = Radio²
+  Perimetro = 2 * PI * Radio, Area = PI * Radio², Diametro = 2 * R
+  Longitud de arco = Radio * Angulo (Radianes)
+  Area de sector = (Angulo (Radianes) / 2) * Radio²
+*/
 
+//Devuelve si el punto P esta dentro del circulo punto C con radio R 
+// Dentro 1 | Borde 0 | Fuera -1, 
+int insideCircle(Point p, Point c, int r) {  //Version con enteros
+  int dx = p.x-c.x, dy = p.y-c.y;
+  int Euc = dx*dx + dy*dy, rSq = r*r;            
+  return Euc < rSq ? 1 : Euc == rSq ? 0 : -1;    
+}
+
+// Devuelve true si hay interseccion + punto de interseccion C
+// Circulo con centro P1 y circulo con centro P2 ambos con radio R
+bool circle2PtsRad(Point p1, Point p2, double r, Point &c) { // Usar double
+  // Para obtener el otro centro circle2PtsRad(p2, p1, r, c);
+  double d2 = (p1.x-p2.x) * (p1.x-p2.x) + 
+              (p1.y-p2.y) * (p1.y-p2.y);
+  double det = r*r / d2 - 0.25;
+  if (det < 0.0) return false;
+  double h = sqrt(det);
+  c.x = (p1.x+p2.x) * 0.5 + (p1.y-p2.y) * h;
+  c.y = (p1.y+p2.y) * 0.5 + (p2.x-p1.x) * h;
+  return true;
+}
 
 
 int main(){
   cout << (fixed) << setprecision(8);
 
+  Point p1;
+  Point p2(0.0, -1.0);
+  Point ans;
+  
 
   return 0;
 }
