@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+//Pura gente del coach moy
 #define INF 1000000000
  
 using namespace std;
@@ -6,6 +7,8 @@ using namespace std;
 typedef long long ll;
 typedef vector<int> vi;
 
+//Acompañado del Euler Tour normalmente viene un Segment Tree
+//Este es de minimos. Modificar si es necesario
 class SegmentTree{
     private:
         int n;
@@ -63,7 +66,7 @@ class SegmentTree{
 struct Grafo{
     int V;
     vector<vi> adj;
-    vi in, out;
+    vi in, out; //En in se guardará el tiempo de entrada y en out de salida del nodo
     int tiempo;
 
     void init(int _V){
@@ -76,6 +79,9 @@ struct Grafo{
 
     void ae(int a, int b){ adj[a].push_back(b); }
 
+    //Se debe empezar con la raiz del arbol y con p = -1
+    //(dando a entender que no tiene padre)
+    //La complejidad es de un dfs nomarl O(V + E)
     void dfs(int u, int p){
         in[u] = tiempo++;
         
@@ -93,35 +99,6 @@ struct Grafo{
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
-	int n, q;
-    cin >> n >> q;
-
-    Grafo g;
-
-    g.init(n);
-
-    for(int k = 1; k < n; k++){
-        int a, b;
-        cin >> a >> b;
-        g.ae(a, b);
-        g.ae(b, a);
-    }
-
-    g.dfs(0, -1);
-
-    SegmentTree st(n * 2);
-    for(int k = 0; k < n; k++){
-        int x;
-        cin >> x;
-        st.update(g.in[k], x);
-        st.update(g.out[k], x);
-    }
-
-    while(q--){
-        int x;
-        cin >> x;
-        cout << st.query(g.in[x], g.out[x]) << "\n";
-    }
  
 	return 0;
 }
