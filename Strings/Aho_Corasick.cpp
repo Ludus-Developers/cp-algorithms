@@ -1,15 +1,16 @@
 #include <bits/stdc++.h>
+//Pura gente del coach moy
  
 using namespace std;
  
 typedef vector<int> vi;
- 
+
+//Tamaño del alfabeto
 const int K = 26;
  
 struct Vertex {
     vi next;
-    bool output = false;
-	int id = -1;
+    bool output = false; //Guarda si el nodo actual marca el final de una palabra
     int p = -1;
     char pch;
     int link = -1;
@@ -22,7 +23,6 @@ struct Vertex {
     }
 };
  
- 
 int go(int v, char ch);
  
 struct Aho_Corasick{
@@ -31,12 +31,17 @@ struct Aho_Corasick{
     void init(){
         t.emplace_back(Vertex());
     }
- 
+    
+    //Convierte la letra del alfabeto a numero
+    //Cambiar si es necesario (en este caso solo sirve para tener
+    //letras minusculas)
     int convert(char ch){
 		return ch - 'a';
     }
- 
-    void add_string(string const& s, int id) {
+    
+    //Agregar una palabra. Complejidad O(n)
+    //n: tamaño de la palabra
+    void add_string(string const& s) {
         int v = 0;
         for (char ch : s) {
             int c = convert(ch);
@@ -48,7 +53,6 @@ struct Aho_Corasick{
             v = t[v].next[c];
         }
         t[v].output = true;
-		t[v].id = id;
     }
  
     int get_link(int v) {
@@ -60,7 +64,10 @@ struct Aho_Corasick{
         }
         return t[v].link;
     }
- 
+    
+    //Te dirige al siguiente nodo del autamata segun cual sea
+    //la letra que insertes
+    //Normalemente se empieza del 0 (la raiz)
     int go(int v, char ch) {
         int c = convert(ch);
         if (t[v].go[c] == -1) {
@@ -71,7 +78,9 @@ struct Aho_Corasick{
         }
         return t[v].go[c];
     }
- 
+    
+    //Devuelve al nodo que represente el prefijo mas largo
+    //del nodo actual y que sea una palabra en el diccionario
     int terminal(int v){
         if(t[v].terminal == -1){
             if(v == 0){
@@ -91,51 +100,6 @@ struct Aho_Corasick{
 int main(){
     ios_base::sync_with_stdio(0);
     cin.tie(0); cout.tie(0);
- 
-    Aho_Corasick ah;
-    ah.init();
- 
-	string T;
-	cin >> T;
-	int n;
-	cin >> n;
-	vector<vi> ocur(n, vi());
-	int minOc[n], tam[n];
-	for(int k = 0; k < n; k++){
-		cin >> minOc[k];
-		string ax;
-		cin >> ax;
-        tam[k] = ax.length();
-		ah.add_string(ax, k);
-	}
- 
-	int v = 0;
-	for(int k = 0; k < (int) T.length(); k++){
-		v = ah.go(v, T[k]);
-		int ax = v;
-		while(ax != 0){
-            if(ah.t[ax].output){
-                ocur[ah.t[ax].id].push_back(k);
-            }
-			ax = ah.terminal(ax);
-		}
-	}
- 
-	for(int k = 0; k < n; k++){
-		if((int) ocur[k].size() < minOc[k]){
-			cout << "-1\n";
-			continue;
-		}
-		int m = ocur[k].size();
- 
-        int res = T.length();
-        for(int j = 0; j <= m - minOc[k]; j++){
-            int dif = tam[k] + (ocur[k][j + minOc[k] - 1] - ocur[k][j]);
-            res = min(res, dif);
-        }
-		
-        cout << res << "\n";
-	}
 	
     return 0;
 }
