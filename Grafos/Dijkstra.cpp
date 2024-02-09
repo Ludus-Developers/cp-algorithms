@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+//Pura gente del coach moy
 #define INF 200000000
 
 using namespace std;
@@ -11,7 +12,7 @@ struct Grafo{
     int V;
     vector<vii> adj;
     vector<bool> ready;
-    vi dist;
+    vi dist; //Aqui se guardaran las distancias
 
     void init(int _V){
         V = _V;
@@ -21,6 +22,8 @@ struct Grafo{
 
     void ae(int a, int b, int c){ adj[a].push_back(ii(b, c)); }
 
+    //Al llamar se calcularan las distancias del nodo x a todos
+    //los demas nodos. Complejidad O(E + VlogV)
     void dijkstra(int x){
         dist.assign(V, INF);
         dist[x] = 0;
