@@ -15,6 +15,8 @@ struct Point {
   
   Point operator+(const Point &p)const{return Point(x+p.x,y+p.y);}
   Point operator-(const Point &p)const{return Point(x-p.x,y-p.y);}
+  Point operator*(Point b) const { return {x * b.x - y * b.y, x * b.y + y * b.x}; }
+
   Point operator*(double a) const {return Point(x*a,y*a);}
   Point operator/(T d) const { return {x / d, y / d}; } //Usar con double
   
@@ -27,7 +29,7 @@ struct Point {
     return sqrt( norm_sq() ); 
   } 
 
-  bool operator<(Point &p) const { // Ordena por X y Y
+  bool operator<(Point p) const { // Ordena por X y Y
     return tie(x, y) < tie(p.x, p.y);
   }
 
@@ -104,6 +106,12 @@ double angle(Point p) {
 double angle(Point v, Point w) { 
   return acos(clamp(v.dot(w) / v.norm() / w.norm(), -1.0, 1.0)); 
 }
+
+// angulo aob
+double angle(Point o, Point a, Point b) {
+  return angle(a - o, b - o);
+}
+
 //True si el punto P esta en el angulo de AB Y AC
 bool inAngle(Point a, Point b, Point c, Point p) {
   assert(orient(a,b,c) != 0);
@@ -153,7 +161,7 @@ Point rotate180(Point p) { // p = rotate180();
   --------------------------- Linea -------------------------------
 */
 
-// Ecuacion ax + by = c
+// Ecuacion ax + by + c = 0
 struct Line { double a, b, c; };                
 
 // Dado los puntos P1 y P2 crea la linea l por referencia
@@ -282,12 +290,24 @@ int insideCircle(Point p, Point c, int r) {  //Version con enteros
   return Euc < rSq ? 1 : Euc == rSq ? 0 : -1;    
 }
 
+// Retorna el punto que se encuentra en el circulo dado el angulo en radianes
+Point circlePoint(Point c, double r, double ang) { // Usar double
+  return Point{c.x + cos(ang) * r, c.y + sin(ang) * r};
+}
+
+// Retorna el punto central del circulo que pasa por A,B,C
+Point circumCenter(Point a, Point b, Point c) { // Usar double
+  b = b - a, c = c - a;
+  assert(b.cross(c) != 0);  // no existe circunferencia colineal
+  return a + rotateCCW90(b * c.norm_sq() - c * b.norm_sq()) / b.cross(c) / 2;
+}
+
 // Devuelve true si hay interseccion + punto de interseccion C
 // Circulo con centro P1 y circulo con centro P2 ambos con radio R
 bool circle2PtsRad(Point p1, Point p2, double r, Point &c) { // Usar double
   // Para obtener el otro centro circle2PtsRad(p2, p1, r, c);
-  double d2 = (p1.x-p2.x) * (p1.x-p2.x) + 
-              (p1.y-p2.y) * (p1.y-p2.y);
+  Point d = p2 - p1;
+  double d2 = d.norm_sq();
   double det = r*r / d2 - 0.25;
   if (det < 0.0) return false;
   double h = sqrt(det);
@@ -296,14 +316,27 @@ bool circle2PtsRad(Point p1, Point p2, double r, Point &c) { // Usar double
   return true;
 }
 
+// Retorna las intersecciones entre dos circulos. 
+int circleCircle(Point o1, double r1, Point o2, double r2, pair<Point, Point> &out) {
+  Point d = o2 - o1;
+  double d2 = d.norm_sq();
+  if (d2 == 0) {
+    assert(r1 != r2);  // Los circulos son iguales
+    return 0;
+  }
+  double pd = (d2 + r1 * r1 - r2 * r2) / 2;
+  double h2 = r1 * r1 - pd * pd / d2;
+  if (h2 >= 0) {
+    Point p = o1 + d * pd / d2, h = rotateCCW90(d) * sqrt(h2 / d2);
+    out = {p - h, p + h};
+  }
+  return 1 + sgn(h2);
+}
 
 int main(){
   cout << (fixed) << setprecision(8);
 
-  Point p1;
-  Point p2(0.0, -1.0);
-  Point ans;
   
-
+  
   return 0;
 }
