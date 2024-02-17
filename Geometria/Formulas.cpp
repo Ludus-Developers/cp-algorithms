@@ -27,18 +27,25 @@ struct Point {
   T norm_sq() { return x * x + y * y; }
   double norm() { // hypot(x, y) mas lento pero mas precision 
     return sqrt( norm_sq() ); 
+  }
+
+  
+  bool operator<(Point p) const { //Ordena por X y Y
+    return x < p.x - EPS || (abs(x - p.x) <= EPS && y < p.y - EPS); 
   } 
 
-  bool operator<(Point p) const { // Ordena por X y Y
-    return tie(x, y) < tie(p.x, p.y);
-  }
+  // bool operator<(Point p) const { // Ordena por X y Y
+  //   return tie(x, y) < tie(p.x, p.y);
+  // }
 
   bool operator == (Point p) const { // Numeros Flotantes
     return (fabs(x - p.x) < EPS && (fabs(y - p.y) < EPS));
   }
-  bool operator == (const Point &p){ // Numeros Enteros
-    return x==p.x && y==p.y; 
-  }
+  
+  // bool operator == (const Point &p){ // Numeros Enteros
+  //   return x==p.x && y==p.y; 
+  // }
+
   bool operator!=(Point p) const { 
     return !(*this == p); 
   }
